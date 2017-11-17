@@ -13,6 +13,10 @@ except ImportError:
     raise ImportError('请安装cx_Oracle pip install cx_Oracle')
 
 
+class StandardError(object):
+    pass
+
+
 class AssetExpiry(object):
     __doc__ = '从oracle书库库导出数据到excel的脚本，需要使用python2.7运行，需要安装csv 和cx_Oracle'
 
@@ -42,9 +46,9 @@ class AssetExpiry(object):
                 for i in self.yield_list_of_content(list_of_content):
                     spamwriter.writerow(i)
         except Exception as e:
-            print Exception(e.message)
+            print(Exception(e.message))
         except AssertionError as e:
-            print AssertionError(e.message)
+            print(AssertionError(e.message))
 
     def yield_list_of_content(self, list_of_content):
         for i in list_of_content:
