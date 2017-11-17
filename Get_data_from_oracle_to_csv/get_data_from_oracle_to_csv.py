@@ -9,10 +9,10 @@ import sys
 import pandas as pd
 from sqlalchemy import MetaData, Table, create_engine
 
-try:
-    import cx_Oracle
-except ImportError:
-    raise ImportError('请安装cx_Oracle pip install cx_Oracle')
+# try:
+#     import cx_Oracle
+# except ImportError:
+#     raise ImportError('请安装cx_Oracle pip install cx_Oracle')
 
 
 class StandardError(object):
