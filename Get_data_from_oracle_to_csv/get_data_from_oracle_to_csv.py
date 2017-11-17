@@ -20,7 +20,7 @@ class StandardError(object):
 
 
 class AssetExpiry(object):
-    __doc__ = '从oracle书库库导出数据到excel的脚本，需要使用python2.7运行，需要安装csv 和cx_Oracle'
+    __doc__ = '从数据库导出数据'
 
     def __init__(self):
 
