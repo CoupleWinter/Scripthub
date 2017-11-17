@@ -6,6 +6,8 @@
 import csv
 import os
 import sys
+import pandas as pd
+from sqlalchemy import MetaData, Table, create_engine
 
 try:
     import cx_Oracle
@@ -23,11 +25,13 @@ class AssetExpiry(object):
     def __init__(self):
 
         # 用户名
-        self.username_for_oracle = ''
+        self.username = ''
         # password
-        self.password_for_oracle = ''
+        self.password = ''
+        self.host = ''
         # oracle实例名
-        self.orcl_for_oracle = ''
+        self.orcl = ''
+        self.database = ''
 
     def fun(self, **kwargs):
         """
@@ -36,15 +40,17 @@ class AssetExpiry(object):
         :return:
         """
         try:
-            sql = 'Sql'
-            self.sql_for_oracle = self.__get_sql(sql=sql)
+            self.__connection()
+            # sql = 'Sql'
+            # self.sql_for_oracle = self.__get_sql(sql=sql)
             # 返回数据集
-            list_of_content = self.__connection()
-            assert (list_of_content is not None)
-            with open('Excel_to_date.csv', 'wb') as f:
-                spamwriter = csv.writer(f, dialect='excel')
-                for i in self.yield_list_of_content(list_of_content):
-                    spamwriter.writerow(i)
+            # list_of_content = self.__connection()
+
+            # assert (list_of_content is not None)
+            # with open('Excel_to_date.csv', 'wb') as f:
+            #     spamwriter = csv.writer(f, dialect='excel')
+            #     for i in self.yield_list_of_content(list_of_content):
+            #         spamwriter.writerow(i)
         except Exception as e:
             print(Exception(e.message))
         except AssertionError as e:
@@ -61,17 +67,26 @@ class AssetExpiry(object):
         :return:
         """
         try:
-            db = cx_Oracle.connect(self.username_for_oracle, self.password_for_oracle, self.orcl_for_oracle)
-            cursor = db.cursor()
-            cursor.execute(self.sql_for_oracle)
-            row = cursor.fetchall()
+            # db = cx_Oracle.connect(self.username_for_oracle, self.password_for_oracle, self.orcl_for_oracle)
+            # cursor = db.cursor()
+            # cursor.execute(self.sql_for_oracle)
+            # row = cursor.fetchall()
+            engine = create_engine(
+                    'oracle://{username}:{pwd}@{host}/{database}'.format(username=self.username,
+                                                                         pwd=self.password,
+                                                                         host=self.host,
+                                                                         database=self.orcl))
+            conn = engine.connect()
+            metadada = MetaData(conn)
+            tabl = Table('table_name', metadada, autoload=True, schema=self.database)
+            sql = tabl.select()
+            result = conn.execute(sql)
+            df = pd.DataFrame(data=list(result), columns=result.keys())
         except Exception as e:
             raise Exception(e.message)
         else:
-            if len(row) == 0:
-                raise StandardError('没有查询到数据，请检查sql是否合法')
-            else:
-                return row
+            df.to_csv('name.csv', index=True)
+            conn.close()
 
     def __get_sql(self, **kwargs):
         """
