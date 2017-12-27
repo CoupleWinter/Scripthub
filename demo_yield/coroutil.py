@@ -2,6 +2,9 @@
 
 from functools import wraps
 from inspect import getgeneratorstate
+from collections import namedtuple
+
+Result = namedtuple('Result', 'count average')
 
 
 def coroutine(func):
@@ -21,13 +24,27 @@ def averager():
     count = 0
     average = None
     while True:
-        term = yield average
-        total += term
-        count += 1
-        average = total / count
+        try:
+            term = yield average
+            if term is None:
+                break
+            total += term
+            count += 1
+            average = total / count
+        except Exception as e:
+            print(e.message)
+        else:
+            print('Coroutine received')
+    return Result(count, average)
 
 
 if __name__ == '__main__':
     a = averager()
     print(getgeneratorstate(a))
-    print(a.send(10))
+    a.send(10)
+    try:
+        a.send(None)
+    except StopIteration as exc:
+        result = exc.value
+        print(result)
+    a.close()
