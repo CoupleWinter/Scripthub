@@ -14,24 +14,22 @@ class AssetExpiry(object):
         self.charset = ''
 
     def fun(self):
-        engine=create_engine('mysql+pymysql://{username}:{pwd}@{host}/{database}'.format(username=self.user,
-                                                                                         pwd=self.password,
-                                                                                         host=self.host,
-                                                                                         database=self.database))
-        conn=engine.connect()
-        metadata=MetaData(conn)
-        tbl=Table('table_name',metadata,autoload=True,schema=self.database)
-        sql=tbl.select()
-        result=conn.execute(sql)
-        df=pd.DataFrame(data=list(result),columns=result.keys())
-        name_csv='table.csv'
-        name_text='table.txt'
+        engine = create_engine('mysql+pymysql://{username}:{pwd}@{host}/{database}'.format(username=self.user,
+                                                                                           pwd=self.password,
+                                                                                           host=self.host,
+                                                                                           database=self.database))
+        conn = engine.connect()
+        metadata = MetaData(conn)
+        tbl = Table('table_name', metadata, autoload=True, schema=self.database)
+        sql = tbl.select()
+        result = conn.execute(sql)
+        df = pd.DataFrame(data=list(result), columns=result.keys())
+        name_csv = 'table.csv'
+        name_text = 'table.txt'
         # index 导出列名
-        df.to_csv(name_csv,index=True)
+        df.to_csv(name_csv, index=True)
         conn.close()
+
 
 if __name__ == '__main__':
     AssetExpiry().fun()
-
-
-
